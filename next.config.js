@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+	transpilePackages: ["lodash-es"],
+};
 
 module.exports = nextConfig;

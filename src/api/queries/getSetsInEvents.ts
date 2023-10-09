@@ -14,8 +14,16 @@ export const GET_SETS_IN_EVENT = gql`
 				}
 				nodes {
 					id
+					state
+					fullRoundText
+					round
+					identifier
+					hasPlaceholder
 					slots {
 						id
+						slotIndex
+						prereqType
+						prereqId
 						entrant {
 							id
 							name
