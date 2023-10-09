@@ -7,4 +7,4 @@ export const REPORT_SET_SCORE = gql`
 			state
 		}
 	}
-`
+`;

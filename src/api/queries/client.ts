@@ -1,18 +1,18 @@
 import { HttpLink } from "@apollo/client";
 import {
-  NextSSRInMemoryCache,
-  NextSSRApolloClient,
+	NextSSRInMemoryCache,
+	NextSSRApolloClient,
 } from "@apollo/experimental-nextjs-app-support/ssr";
 import { registerApolloClient } from "@apollo/experimental-nextjs-app-support/rsc";
 
 export const { getClient } = registerApolloClient(() => {
-  return new NextSSRApolloClient({
-    cache: new NextSSRInMemoryCache(),
-    link: new HttpLink({
-      uri: process.env.START_GG_URL,
-      headers: {
-        Authorization: `Bearer ${process.env.START_GG_AUTH_TOKEN}`
-      }
-    }),
-  });
+	return new NextSSRApolloClient({
+		cache: new NextSSRInMemoryCache(),
+		link: new HttpLink({
+			uri: process.env.START_GG_URL,
+			headers: {
+				Authorization: `Bearer ${process.env.START_GG_AUTH_TOKEN}`,
+			},
+		}),
+	});
 });

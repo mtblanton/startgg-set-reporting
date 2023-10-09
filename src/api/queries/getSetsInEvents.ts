@@ -5,11 +5,7 @@ export const GET_SETS_IN_EVENT = gql`
 		event(id: $eventId) {
 			id
 			name
-			sets(
-				page: $page
-				perPage: $perPage
-				sortType: STANDARD
-			) {
+			sets(page: $page, perPage: $perPage, sortType: STANDARD) {
 				pageInfo {
 					total
 				}
@@ -26,4 +22,4 @@ export const GET_SETS_IN_EVENT = gql`
 			}
 		}
 	}
-`
+`;
