@@ -9,9 +9,9 @@ export const { getClient } = registerApolloClient(() => {
 	return new NextSSRApolloClient({
 		cache: new NextSSRInMemoryCache(),
 		link: new HttpLink({
-			uri: process.env.START_GG_URL,
+			uri: process.env.NEXT_PUBLIC_START_GG_URL,
 			headers: {
-				Authorization: `Bearer ${process.env.START_GG_AUTH_TOKEN}`,
+				Authorization: `Bearer ${process.env.NEXT_PUBLIC_START_GG_AUTH_TOKEN}`,
 			},
 		}),
 	});

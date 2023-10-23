@@ -1,4 +1,4 @@
-import { getClient } from "@/api/queries/client";
+import { getClient } from "@/api/client";
 import { GET_EVENTS_IN_TOURNAMENT } from "@/api/queries/getEventsInTournament";
 import Link from "next/link";
 import { EventCard } from "./EventCard";

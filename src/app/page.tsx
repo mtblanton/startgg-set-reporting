@@ -1,7 +1,7 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import { TournamentCard } from "@/components/TournamentCard";
-import { getClient } from "@/api/queries/client";
+import { getClient } from "@/api/client";
 import { GET_TOURNAMENTS_BY_OWNER } from "@/api/queries/getTournamentsByOwner";
 
 export default async function Home() {

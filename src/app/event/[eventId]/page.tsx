@@ -1,11 +1,14 @@
-import { getClient } from "@/api/queries/client";
+"use client";
+
+import { getClient } from "@/api/client";
 import { GET_EVENTS_IN_TOURNAMENT } from "@/api/queries/getEventsInTournament";
 import Link from "next/link";
-import { GET_SETS_IN_EVENT } from "@/api/queries/getSetsInEvents";
+import { GET_SETS_IN_EVENT } from "@/api/queries/getSetsInEvent";
 import { Entrant } from "./Entrant";
 import { SetCard } from "./SetCard";
 import { groupBy } from "lodash-es";
 import { Fragment } from "react";
+import { useQuery } from "@apollo/experimental-nextjs-app-support/ssr";
 
 type TournamentPageProps = {
 	params: {
@@ -27,32 +30,34 @@ type Set = {
 	slots: SetSlot[];
 };
 
-export default async function TournamentPage({
+export default function TournamentPage({
 	params: { eventId },
 }: TournamentPageProps) {
-	const client = getClient();
-	const { data } = await client.query<{
-		event: {
-			id: number;
-			name: string;
-			tournament: { __typename: "Tournament"; id: number };
-			sets: {
-				__typename: "SetConnection";
-				pageInfo: { __typename: "PageInfo"; total: number };
-				nodes: Set[];
-			};
-		};
-	}>({
-		query: GET_SETS_IN_EVENT,
+	const { data, loading, error } = useQuery(GET_SETS_IN_EVENT, {
 		variables: { eventId, page: 1, perPage: 100 },
 		fetchPolicy: "no-cache",
 	});
 
-	const sets = data.event.sets.nodes;
+	if (loading) {
+		return null;
+	}
 
-	const filteredSets = sets.filter((set) => validStates.includes(set.state));
-	console.log(filteredSets);
-	const groupedSets = groupBy(filteredSets, (set) => ActivityState[set.state]);
+	if (error) return `Error! ${error}`;
+
+	const sets = data.event?.sets?.nodes;
+
+	if (sets == null) {
+		return <div>No sets returned</div>;
+	}
+
+	const filteredSets = sets.filter(
+		(set) => set != null && validStates.includes(set.state as number),
+	) as NonNullable<(typeof sets)[number]>[];
+
+	const groupedSets = groupBy(
+		filteredSets,
+		(set) => ActivityState[set!.state as number],
+	);
 
 	return (
 		<div>
@@ -60,13 +65,14 @@ export default async function TournamentPage({
 				return (
 					<Fragment key={state}>
 						{state}
-						{sets.map((set) =>
+						{filteredSets.map((set) =>
 							!set.hasPlaceholder ? (
 								<SetCard
-									state={set.state}
+									state={set.state!}
 									key={set.id}
+									// @ts-ignore this type is annoying. maybe codegen is a mistake.
 									slots={set.slots}
-									id={set.id}
+									id={set.id!}
 								/>
 							) : null,
 						)}

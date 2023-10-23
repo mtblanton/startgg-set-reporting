@@ -1,4 +1,5 @@
 import { gql } from "@/__generated__";
+
 export const GET_SETS_IN_EVENT = gql(`
 	query EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {
 		event(id: $eventId) {
@@ -23,16 +24,7 @@ export const GET_SETS_IN_EVENT = gql(`
 						slotIndex
 						prereqType
 						prereqId
-						entrant {
-							id
-							name
-							participants {
-								id
-								user {
-									name
-								}
-							}
-						}
+						...Entrant
 					}
 				}
 			}
