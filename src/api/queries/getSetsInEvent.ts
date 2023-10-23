@@ -21,10 +21,7 @@ export const GET_SETS_IN_EVENT = gql(`
 					hasPlaceholder
 					slots {
 						id
-						slotIndex
-						prereqType
-						prereqId
-						...Entrant
+						...SlotDetails
 					}
 				}
 			}

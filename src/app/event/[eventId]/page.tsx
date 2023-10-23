@@ -7,8 +7,8 @@ import { GET_SETS_IN_EVENT } from "@/api/queries/getSetsInEvent";
 import { Entrant } from "./Entrant";
 import { SetCard } from "./SetCard";
 import { groupBy } from "lodash-es";
-import { Fragment } from "react";
-import { useQuery } from "@apollo/experimental-nextjs-app-support/ssr";
+import { Fragment, Suspense } from "react";
+import { useSuspenseQuery } from "@apollo/experimental-nextjs-app-support/ssr";
 
 type TournamentPageProps = {
 	params: {
@@ -33,16 +33,9 @@ type Set = {
 export default function TournamentPage({
 	params: { eventId },
 }: TournamentPageProps) {
-	const { data, loading, error } = useQuery(GET_SETS_IN_EVENT, {
+	const { data } = useSuspenseQuery(GET_SETS_IN_EVENT, {
 		variables: { eventId, page: 1, perPage: 100 },
-		fetchPolicy: "no-cache",
 	});
-
-	if (loading) {
-		return null;
-	}
-
-	if (error) return `Error! ${error}`;
 
 	const sets = data.event?.sets?.nodes;
 
@@ -56,30 +49,32 @@ export default function TournamentPage({
 
 	const groupedSets = groupBy(
 		filteredSets,
-		(set) => ActivityState[set!.state as number],
+		(set) => ActivityState[set.state as number],
 	);
 
 	return (
-		<div>
-			{Object.entries(groupedSets).map(([state, sets]) => {
-				return (
-					<Fragment key={state}>
-						{state}
-						{filteredSets.map((set) =>
-							!set.hasPlaceholder ? (
-								<SetCard
-									state={set.state!}
-									key={set.id}
-									// @ts-ignore this type is annoying. maybe codegen is a mistake.
-									slots={set.slots}
-									id={set.id!}
-								/>
-							) : null,
-						)}
-					</Fragment>
-				);
-			})}
-		</div>
+		<Suspense fallback={<div>Loading...</div>}>
+			<div>
+				{Object.entries(groupedSets).map(([state, sets]) => {
+					return (
+						<Fragment key={state}>
+							{state}
+							{sets.map((set) =>
+								!set.hasPlaceholder ? (
+									<SetCard
+										state={set.state!}
+										key={set.id}
+										// @ts-ignore this type is annoying. maybe codegen is a mistake.
+										slots={set.slots}
+										id={set.id!}
+									/>
+								) : null,
+							)}
+						</Fragment>
+					);
+				})}
+			</div>
+		</Suspense>
 	);
 }
 

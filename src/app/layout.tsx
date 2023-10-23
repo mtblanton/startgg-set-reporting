@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+import { RefreshButton } from "./RefreshButton";
 
 if (process.env.NODE_ENV !== "production") {
 	// Adds messages only in a dev environment
@@ -26,7 +27,10 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<ApolloWrapper>{children}</ApolloWrapper>
+				<ApolloWrapper>
+					<RefreshButton />
+					{children}
+				</ApolloWrapper>
 			</body>
 		</html>
 	);
