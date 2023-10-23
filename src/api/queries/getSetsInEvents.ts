@@ -1,6 +1,5 @@
-import { gql } from "@apollo/client";
-
-export const GET_SETS_IN_EVENT = gql`
+import { gql } from "@/__generated__";
+export const GET_SETS_IN_EVENT = gql(`
 	query EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {
 		event(id: $eventId) {
 			id
@@ -39,4 +38,4 @@ export const GET_SETS_IN_EVENT = gql`
 			}
 		}
 	}
-`;
+`);
