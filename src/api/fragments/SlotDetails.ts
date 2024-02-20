@@ -1,6 +1,6 @@
 import { gql } from "@/__generated__";
 
-export const SlotFragment = gql(`
+export const SlotDetails = gql(`
 	fragment SlotDetails on SetSlot {
 		slotIndex
 		prereqType

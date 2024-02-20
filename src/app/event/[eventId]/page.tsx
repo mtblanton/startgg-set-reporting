@@ -5,13 +5,9 @@ import { useSuspenseQuery } from "@apollo/experimental-nextjs-app-support/ssr";
 import { Flex, Section } from "@radix-ui/themes";
 import { groupBy } from "lodash-es";
 import { Suspense } from "react";
-import { Entrant } from "./Entrant";
-import { Round, SetGroup } from "./RoundSetGroup";
-import {
-	ActivityState,
-	isValidActivityState,
-	validStates,
-} from "./ActivityState";
+import { isValidActivityState } from "./ActivityState";
+import { Entrant } from "./components/Entrant";
+import { SetGroup } from "./components/RoundSetGroup";
 import { isSetReady } from "./isSetReady";
 
 type TournamentPageProps = {

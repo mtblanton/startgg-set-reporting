@@ -9,7 +9,8 @@ import {
 	NextSSRApolloClient,
 	SSRMultipartLink,
 } from "@apollo/experimental-nextjs-app-support/ssr";
-import { SlotFragment } from "./fragments/Slot";
+import { SlotDetails } from "./fragments/SlotDetails";
+import { SetDetails } from "./fragments/SetDetails";
 
 function makeClient() {
 	const httpLink = new HttpLink({
@@ -31,7 +32,7 @@ function makeClient() {
 		connectToDevTools: true,
 		// use the `NextSSRInMemoryCache`, not the normal `InMemoryCache`
 		cache: new NextSSRInMemoryCache({
-			fragments: createFragmentRegistry(SlotFragment),
+			fragments: createFragmentRegistry(SlotDetails, SetDetails),
 		}),
 		link:
 			typeof window === "undefined"

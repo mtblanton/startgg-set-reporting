@@ -91,7 +91,7 @@ export type BracketSetGameDataInput = {
   /** ID of the stage that was played for this game (if applicable) */
   stageId?: InputMaybe<Scalars['ID']['input']>;
   /** Entrant ID of game winner */
-  winnerId: Scalars['ID']['input'];
+  winnerId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 /** Game specific H2H selections made by the entrants, such as character info */
@@ -724,10 +724,14 @@ export type Mutation = {
   deleteStation?: Maybe<Scalars['Boolean']['output']>;
   /** Delete a wave by id */
   deleteWave?: Maybe<Scalars['Boolean']['output']>;
+  /** Generate tournament registration Token on behalf of user */
+  generateRegistrationToken?: Maybe<Scalars['String']['output']>;
   /** Update a set to called state */
   markSetCalled?: Maybe<Set>;
   /** Update a set to called state */
   markSetInProgress?: Maybe<Set>;
+  /** Register for tournament */
+  registerForTournament?: Maybe<Participant>;
   /**
    * Report set winner or game stats for a H2H bracket set. If winnerId is
    * supplied, mark set as complete. gameData parameter will overwrite any existing
@@ -740,6 +744,11 @@ export type Mutation = {
   resolveScheduleConflicts?: Maybe<Array<Maybe<Seed>>>;
   /** Swap two seed ids in a phase */
   swapSeeds?: Maybe<Array<Maybe<Seed>>>;
+  /**
+   * Update game stats for a H2H bracket set. Set winner cannot be changed with
+   * this function, use the resetSet mutation instead.
+   */
+  updateBracketSet?: Maybe<Set>;
   /** Update set of phase groups in a phase */
   updatePhaseGroups?: Maybe<Array<Maybe<PhaseGroup>>>;
   /** Update the seeding for a phase */
@@ -768,6 +777,12 @@ export type MutationDeleteWaveArgs = {
 };
 
 
+export type MutationGenerateRegistrationTokenArgs = {
+  registration: TournamentRegistrationInput;
+  userId: Scalars['ID']['input'];
+};
+
+
 export type MutationMarkSetCalledArgs = {
   setId: Scalars['ID']['input'];
 };
@@ -778,8 +793,15 @@ export type MutationMarkSetInProgressArgs = {
 };
 
 
+export type MutationRegisterForTournamentArgs = {
+  registration?: InputMaybe<TournamentRegistrationInput>;
+  registrationToken?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationReportBracketSetArgs = {
   gameData?: InputMaybe<Array<InputMaybe<BracketSetGameDataInput>>>;
+  isDQ?: InputMaybe<Scalars['Boolean']['input']>;
   setId: Scalars['ID']['input'];
   winnerId?: InputMaybe<Scalars['ID']['input']>;
 };
@@ -801,6 +823,14 @@ export type MutationSwapSeedsArgs = {
   phaseId: Scalars['ID']['input'];
   seed1Id: Scalars['ID']['input'];
   seed2Id: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateBracketSetArgs = {
+  gameData?: InputMaybe<Array<InputMaybe<BracketSetGameDataInput>>>;
+  isDQ?: InputMaybe<Scalars['Boolean']['input']>;
+  setId: Scalars['ID']['input'];
+  winnerId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1361,6 +1391,13 @@ export enum RaceType {
   Timed = 'TIMED'
 }
 
+export type ResetAffectedData = {
+  __typename?: 'ResetAffectedData';
+  affectedPhaseGroupCount?: Maybe<Scalars['Int']['output']>;
+  affectedSetCount?: Maybe<Scalars['Int']['output']>;
+  affectedSets?: Maybe<Array<Maybe<Set>>>;
+};
+
 export type ResolveConflictsLockedSeedConfig = {
   eventId: Scalars['ID']['input'];
   numSeeds: Scalars['Int']['input'];
@@ -1483,6 +1520,8 @@ export type Set = {
   lPlacement?: Maybe<Scalars['Int']['output']>;
   /** Phase group that this Set belongs to. */
   phaseGroup?: Maybe<PhaseGroup>;
+  /** The sets that are affected from resetting this set */
+  resetAffectedData?: Maybe<ResetAffectedData>;
   /** The round number of the set. Negative numbers are losers bracket */
   round?: Maybe<Scalars['Int']['output']>;
   /**
@@ -2184,6 +2223,10 @@ export type TournamentQuery = {
   sortBy?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type TournamentRegistrationInput = {
+  eventIds?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+};
+
 export type UpdatePhaseSeedInfo = {
   phaseGroupId?: InputMaybe<Scalars['ID']['input']>;
   seedId: Scalars['ID']['input'];
@@ -2359,6 +2402,11 @@ export type WaveUpsertInput = {
   startAt: Scalars['Timestamp']['input'];
 };
 
+export type SetDetailsFragment = { __typename?: 'Set', id?: string | null, round?: number | null, startedAt?: any | null, totalGames?: number | null, state?: number | null, fullRoundText?: string | null, slots?: Array<(
+    { __typename?: 'SetSlot', id?: string | null }
+    & { ' $fragmentRefs'?: { 'SlotDetailsFragment': SlotDetailsFragment } }
+  ) | null> | null } & { ' $fragmentName'?: 'SetDetailsFragment' };
+
 export type SlotDetailsFragment = { __typename?: 'SetSlot', slotIndex?: number | null, prereqType?: string | null, prereqId?: string | null, entrant?: { __typename?: 'Entrant', id?: string | null, name?: string | null } | null } & { ' $fragmentName'?: 'SlotDetailsFragment' };
 
 export type ReportSetMutationVariables = Exact<{
@@ -2383,10 +2431,10 @@ export type EventSetsQueryVariables = Exact<{
 }>;
 
 
-export type EventSetsQuery = { __typename?: 'Query', event?: { __typename?: 'Event', id?: string | null, name?: string | null, tournament?: { __typename?: 'Tournament', id?: string | null } | null, sets?: { __typename?: 'SetConnection', pageInfo?: { __typename?: 'PageInfo', total?: number | null } | null, nodes?: Array<{ __typename?: 'Set', id?: string | null, state?: number | null, fullRoundText?: string | null, round?: number | null, identifier?: string | null, hasPlaceholder?: boolean | null, slots?: Array<(
-          { __typename?: 'SetSlot', id?: string | null }
-          & { ' $fragmentRefs'?: { 'SlotDetailsFragment': SlotDetailsFragment } }
-        ) | null> | null } | null> | null } | null } | null };
+export type EventSetsQuery = { __typename?: 'Query', event?: { __typename?: 'Event', id?: string | null, name?: string | null, tournament?: { __typename?: 'Tournament', id?: string | null } | null, sets?: { __typename?: 'SetConnection', pageInfo?: { __typename?: 'PageInfo', total?: number | null } | null, nodes?: Array<(
+        { __typename?: 'Set' }
+        & { ' $fragmentRefs'?: { 'SetDetailsFragment': SetDetailsFragment } }
+      ) | null> | null } | null } | null };
 
 export type TournamentsByOwnerQueryVariables = Exact<{
   perPage: Scalars['Int']['input'];
@@ -2397,7 +2445,8 @@ export type TournamentsByOwnerQueryVariables = Exact<{
 export type TournamentsByOwnerQuery = { __typename?: 'Query', tournaments?: { __typename?: 'TournamentConnection', nodes?: Array<{ __typename?: 'Tournament', id?: string | null, name?: string | null, slug?: string | null } | null> | null } | null };
 
 export const SlotDetailsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SlotDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SetSlot"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slotIndex"}},{"kind":"Field","name":{"kind":"Name","value":"prereqType"}},{"kind":"Field","name":{"kind":"Name","value":"prereqId"}},{"kind":"Field","name":{"kind":"Name","value":"entrant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<SlotDetailsFragment, unknown>;
+export const SetDetailsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SetDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Set"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"round"}},{"kind":"Field","name":{"kind":"Name","value":"slots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"SlotDetails"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"nonreactive"}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalGames"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"fullRoundText"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SlotDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SetSlot"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slotIndex"}},{"kind":"Field","name":{"kind":"Name","value":"prereqType"}},{"kind":"Field","name":{"kind":"Name","value":"prereqId"}},{"kind":"Field","name":{"kind":"Name","value":"entrant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<SetDetailsFragment, unknown>;
 export const ReportSetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ReportSet"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"setId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"winnerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reportBracketSet"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"setId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"setId"}}},{"kind":"Argument","name":{"kind":"Name","value":"winnerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"winnerId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"state"}}]}}]}}]} as unknown as DocumentNode<ReportSetMutation, ReportSetMutationVariables>;
 export const EventsInTournamentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EventsInTournament"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tournamentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tournament"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tournamentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"events"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<EventsInTournamentQuery, EventsInTournamentQueryVariables>;
-export const EventSetsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EventSets"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"perPage"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"tournament"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"perPage"},"value":{"kind":"Variable","name":{"kind":"Name","value":"perPage"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortType"},"value":{"kind":"EnumValue","value":"STANDARD"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"fullRoundText"}},{"kind":"Field","name":{"kind":"Name","value":"round"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"hasPlaceholder"}},{"kind":"Field","name":{"kind":"Name","value":"slots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"SlotDetails"}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SlotDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SetSlot"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slotIndex"}},{"kind":"Field","name":{"kind":"Name","value":"prereqType"}},{"kind":"Field","name":{"kind":"Name","value":"prereqId"}},{"kind":"Field","name":{"kind":"Name","value":"entrant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<EventSetsQuery, EventSetsQueryVariables>;
+export const EventSetsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EventSets"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"perPage"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"tournament"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"perPage"},"value":{"kind":"Variable","name":{"kind":"Name","value":"perPage"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortType"},"value":{"kind":"EnumValue","value":"STANDARD"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SetDetails"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"nonreactive"}}]}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SlotDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SetSlot"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slotIndex"}},{"kind":"Field","name":{"kind":"Name","value":"prereqType"}},{"kind":"Field","name":{"kind":"Name","value":"prereqId"}},{"kind":"Field","name":{"kind":"Name","value":"entrant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SetDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Set"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"round"}},{"kind":"Field","name":{"kind":"Name","value":"slots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"SlotDetails"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"nonreactive"}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalGames"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"fullRoundText"}}]}}]} as unknown as DocumentNode<EventSetsQuery, EventSetsQueryVariables>;
 export const TournamentsByOwnerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TournamentsByOwner"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"perPage"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ownerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tournaments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"perPage"},"value":{"kind":"Variable","name":{"kind":"Name","value":"perPage"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"ownerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ownerId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}}]}}]}}]}}]} as unknown as DocumentNode<TournamentsByOwnerQuery, TournamentsByOwnerQueryVariables>;

@@ -1,3 +1,9 @@
 {
-	"typescript.tsdk": "node_modules/typescript/lib"
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"graphql-codegen.configFilePath": "{projectRoot}/codegen.ts",
+	"graphql-codegen.fileExtensionsDeclaringGraphQLDocuments": [
+		"graphql",
+		"gql",
+		"ts"
+	]
 }

@@ -1,8 +1,10 @@
-"use client";
 import { Box, Flex, Text } from "@radix-ui/themes";
-import { isValidActivityState, sortSetsByActivityState } from "./ActivityState";
+import {
+	isValidActivityState,
+	sortSetsByActivityState,
+} from "../ActivityState";
 import { SetCard } from "./SetCard";
-import { Set } from "./page";
+import { Set } from "../page";
 
 type SetGroupProps = {
 	round: string;
@@ -19,15 +21,7 @@ export function SetGroup({ round, sets }: SetGroupProps) {
 					.sort(sortSetsByActivityState)
 					.filter((set) => isValidActivityState(set.state))
 					.map((set) =>
-						!set.hasPlaceholder ? (
-							<SetCard
-								state={set.state!}
-								key={set.id}
-								// @ts-ignore this type is annoying. maybe codegen is a mistake.
-								slots={set.slots}
-								id={set.id!}
-							/>
-						) : null,
+						!set.hasPlaceholder ? <SetCard key={set.id} id={set.id} /> : null,
 					)}
 			</Flex>
 		</Box>

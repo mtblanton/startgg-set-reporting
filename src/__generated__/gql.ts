@@ -13,10 +13,11 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n\tfragment SetDetails on Set {\n\t\tid\n\t\tround\n\t\tslots {\n\t\t\tid\n\t\t\t...SlotDetails @nonreactive\n\t\t}\n\t\tstartedAt\n\t\ttotalGames\n\t\tstate\n\t\tfullRoundText\n\t}\n": types.SetDetailsFragmentDoc,
     "\n\tfragment SlotDetails on SetSlot {\n\t\tslotIndex\n\t\tprereqType\n\t\tprereqId\n\t\tentrant {\n\t\t\tid\n\t\t  name\n\t\t}\n\t}\n": types.SlotDetailsFragmentDoc,
     "\n\tmutation ReportSet($setId: ID!, $winnerId: ID!) {\n\t\treportBracketSet(setId: $setId, winnerId: $winnerId) {\n\t\t\tid\n\t\t\tstate\n\t\t}\n\t}\n": types.ReportSetDocument,
     "\n\tquery EventsInTournament($tournamentId: ID!) {\n\t\ttournament(id: $tournamentId) {\n\t\t\tid\n\t\t\tname\n\t\t\tevents {\n\t\t\t\tname\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n": types.EventsInTournamentDocument,
-    "\n\tquery EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {\n\t\tevent(id: $eventId) {\n\t\t\tid\n\t\t\tname\n\t\t\ttournament {\n\t\t\t\tid\n\t\t\t}\n\t\t\tsets(page: $page, perPage: $perPage, sortType: STANDARD) {\n\t\t\t\tpageInfo {\n\t\t\t\t\ttotal\n\t\t\t\t}\n\t\t\t\tnodes {\n\t\t\t\t\tid\n\t\t\t\t\tstate\n\t\t\t\t\tfullRoundText\n\t\t\t\t\tround\n\t\t\t\t\tidentifier\n\t\t\t\t\thasPlaceholder\n\t\t\t\t\tslots {\n\t\t\t\t\t\tid\n\t\t\t\t\t\t...SlotDetails\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": types.EventSetsDocument,
+    "\n\tquery EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {\n\t\tevent(id: $eventId) {\n\t\t\tid\n\t\t\tname\n\t\t\ttournament {\n\t\t\t\tid\n\t\t\t}\n\t\t\tsets(page: $page, perPage: $perPage, sortType: STANDARD) {\n\t\t\t\tpageInfo {\n\t\t\t\t\ttotal\n\t\t\t\t}\n\t\t\t\tnodes {\n\t\t\t\t\t...SetDetails @nonreactive\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": types.EventSetsDocument,
     "\n\tquery TournamentsByOwner($perPage: Int!, $ownerId: ID!) {\n\t\ttournaments(query: { perPage: $perPage, filter: { ownerId: $ownerId } }) {\n\t\t\tnodes {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tslug\n\t\t\t}\n\t\t}\n\t}\n": types.TournamentsByOwnerDocument,
 };
 
@@ -37,6 +38,10 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n\tfragment SetDetails on Set {\n\t\tid\n\t\tround\n\t\tslots {\n\t\t\tid\n\t\t\t...SlotDetails @nonreactive\n\t\t}\n\t\tstartedAt\n\t\ttotalGames\n\t\tstate\n\t\tfullRoundText\n\t}\n"): (typeof documents)["\n\tfragment SetDetails on Set {\n\t\tid\n\t\tround\n\t\tslots {\n\t\t\tid\n\t\t\t...SlotDetails @nonreactive\n\t\t}\n\t\tstartedAt\n\t\ttotalGames\n\t\tstate\n\t\tfullRoundText\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n\tfragment SlotDetails on SetSlot {\n\t\tslotIndex\n\t\tprereqType\n\t\tprereqId\n\t\tentrant {\n\t\t\tid\n\t\t  name\n\t\t}\n\t}\n"): (typeof documents)["\n\tfragment SlotDetails on SetSlot {\n\t\tslotIndex\n\t\tprereqType\n\t\tprereqId\n\t\tentrant {\n\t\t\tid\n\t\t  name\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -49,7 +54,7 @@ export function gql(source: "\n\tquery EventsInTournament($tournamentId: ID!) {\
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tquery EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {\n\t\tevent(id: $eventId) {\n\t\t\tid\n\t\t\tname\n\t\t\ttournament {\n\t\t\t\tid\n\t\t\t}\n\t\t\tsets(page: $page, perPage: $perPage, sortType: STANDARD) {\n\t\t\t\tpageInfo {\n\t\t\t\t\ttotal\n\t\t\t\t}\n\t\t\t\tnodes {\n\t\t\t\t\tid\n\t\t\t\t\tstate\n\t\t\t\t\tfullRoundText\n\t\t\t\t\tround\n\t\t\t\t\tidentifier\n\t\t\t\t\thasPlaceholder\n\t\t\t\t\tslots {\n\t\t\t\t\t\tid\n\t\t\t\t\t\t...SlotDetails\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {\n\t\tevent(id: $eventId) {\n\t\t\tid\n\t\t\tname\n\t\t\ttournament {\n\t\t\t\tid\n\t\t\t}\n\t\t\tsets(page: $page, perPage: $perPage, sortType: STANDARD) {\n\t\t\t\tpageInfo {\n\t\t\t\t\ttotal\n\t\t\t\t}\n\t\t\t\tnodes {\n\t\t\t\t\tid\n\t\t\t\t\tstate\n\t\t\t\t\tfullRoundText\n\t\t\t\t\tround\n\t\t\t\t\tidentifier\n\t\t\t\t\thasPlaceholder\n\t\t\t\t\tslots {\n\t\t\t\t\t\tid\n\t\t\t\t\t\t...SlotDetails\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n"];
+export function gql(source: "\n\tquery EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {\n\t\tevent(id: $eventId) {\n\t\t\tid\n\t\t\tname\n\t\t\ttournament {\n\t\t\t\tid\n\t\t\t}\n\t\t\tsets(page: $page, perPage: $perPage, sortType: STANDARD) {\n\t\t\t\tpageInfo {\n\t\t\t\t\ttotal\n\t\t\t\t}\n\t\t\t\tnodes {\n\t\t\t\t\t...SetDetails @nonreactive\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {\n\t\tevent(id: $eventId) {\n\t\t\tid\n\t\t\tname\n\t\t\ttournament {\n\t\t\t\tid\n\t\t\t}\n\t\t\tsets(page: $page, perPage: $perPage, sortType: STANDARD) {\n\t\t\t\tpageInfo {\n\t\t\t\t\ttotal\n\t\t\t\t}\n\t\t\t\tnodes {\n\t\t\t\t\t...SetDetails @nonreactive\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
