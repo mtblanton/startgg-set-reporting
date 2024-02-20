@@ -6,6 +6,9 @@ import { useMutation } from "@apollo/client";
 import { useFragment } from "@apollo/experimental-nextjs-app-support/ssr";
 import { SetSlot } from "./page";
 import { Button, Card, Flex, Grid, Text } from "@radix-ui/themes";
+import { isSetReady } from "./isSetReady";
+import { PlayIcon } from "@radix-ui/react-icons";
+import { ActivityState } from "./ActivityState";
 
 type EntrantProps = {
 	id: string;
@@ -49,17 +52,20 @@ function Entrant({ id, setId }: EntrantProps) {
 	);
 }
 
-type SetCardProps = { slots: SetSlot[]; id: string; state: number };
+type SetCardProps = {
+	slots: SetSlot[];
+	id: string;
+	state: ActivityState;
+};
+
 export function SetCard({ id, slots, state }: SetCardProps) {
-	if (slots.some((slot) => slot.entrant == null)) {
+	if (!isSetReady({ slots })) {
 		return null;
 	}
 
 	return (
 		<Card>
-			<Text>
-				<Text weight="bold">{id}</Text> {state}
-			</Text>
+			{state === ActivityState.ACTIVE && <PlayIcon />}
 			<Flex gap="2">
 				{slots.map((slot) => (
 					<Entrant id={slot.id} key={slot.id} setId={id} />

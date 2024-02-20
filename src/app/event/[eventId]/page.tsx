@@ -1,15 +1,18 @@
 "use client";
 
-import { getClient } from "@/api/client";
-import { GET_EVENTS_IN_TOURNAMENT } from "@/api/queries/getEventsInTournament";
-import Link from "next/link";
 import { GET_SETS_IN_EVENT } from "@/api/queries/getSetsInEvent";
-import { Entrant } from "./Entrant";
-import { SetCard } from "./SetCard";
-import { groupBy } from "lodash-es";
-import { Fragment, Suspense } from "react";
 import { useSuspenseQuery } from "@apollo/experimental-nextjs-app-support/ssr";
-import { Container, Flex, Heading, Section, Text } from "@radix-ui/themes";
+import { Flex, Section } from "@radix-ui/themes";
+import { groupBy } from "lodash-es";
+import { Suspense } from "react";
+import { Entrant } from "./Entrant";
+import { Round, SetGroup } from "./RoundSetGroup";
+import {
+	ActivityState,
+	isValidActivityState,
+	validStates,
+} from "./ActivityState";
+import { isSetReady } from "./isSetReady";
 
 type TournamentPageProps = {
 	params: {
@@ -23,12 +26,13 @@ export type SetSlot = {
 	entrant: Entrant;
 };
 
-type Set = {
+export type Set = {
 	__typename: "Set";
 	id: string;
 	state: number;
 	hasPlaceholder: boolean;
 	slots: SetSlot[];
+	fullRoundText: string;
 };
 
 export default function TournamentPage({
@@ -44,64 +48,26 @@ export default function TournamentPage({
 		return <div>No sets returned</div>;
 	}
 
-	const filteredSets = sets.filter(
-		(set) => set != null && validStates.includes(set.state as number),
-	) as NonNullable<(typeof sets)[number]>[];
-
-	const groupedSets = groupBy(
-		filteredSets,
-		(set) => ActivityState[set.state as number],
+	const setsGroupedByRound = groupBy(
+		sets as Set[],
+		(set) => set?.fullRoundText,
 	);
 
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
 			<Flex direction="column">
-				{Object.entries(groupedSets).map(([state, sets]) => {
-					return (
-						<Section size="1" key={state}>
-							<Text as="div" size="6" weight="medium" mb="4">
-								{state}
-							</Text>
-							{sets.map((set) =>
-								!set.hasPlaceholder ? (
-									<SetCard
-										state={set.state!}
-										key={set.id}
-										// @ts-ignore this type is annoying. maybe codegen is a mistake.
-										slots={set.slots}
-										id={set.id!}
-									/>
-								) : null,
-							)}
-						</Section>
-					);
-				})}
+				<Section size="1">
+					{getEligibleSets(setsGroupedByRound).map(([round, sets]) => {
+						return <SetGroup key={round} round={round} sets={sets} />;
+					})}
+				</Section>
 			</Flex>
 		</Suspense>
 	);
 }
 
-enum ActivityState {
-	// # Activity is created
-	CREATED = 1,
-	// # Activity is active or in progress
-	ACTIVE = 2,
-	// # Activity is done
-	COMPLETED = 3,
-	// # Activity is ready to be started
-	READY = 4,
-	// # Activity is invalid
-	INVALID = 5,
-	// # Activity, like a set, has been called to start
-	CALLED = 6,
-	// # Activity is queued to run
-	QUEUED = 7,
+function getEligibleSets(groupedSets: Record<string, Set[]>) {
+	return Object.entries(groupedSets).filter(([_, sets]) =>
+		sets.some((set) => isSetReady(set) && isValidActivityState(set.state)),
+	);
 }
-
-const validStates = [
-	ActivityState.ACTIVE,
-	ActivityState.CALLED,
-	ActivityState.QUEUED,
-	ActivityState.READY,
-	ActivityState.CREATED,
-];
