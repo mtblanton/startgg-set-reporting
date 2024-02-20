@@ -1,12 +1,15 @@
 import { ApolloWrapper } from "@/api/wrapper";
-import "./globals.css";
+// import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"] });
 
+import "@radix-ui/themes/styles.css";
+
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import { RefreshButton } from "./RefreshButton";
+import { Container, Theme } from "@radix-ui/themes";
 
 if (process.env.NODE_ENV !== "production") {
 	// Adds messages only in a dev environment
@@ -28,8 +31,9 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={inter.className}>
 				<ApolloWrapper>
-					<RefreshButton />
-					{children}
+					<Theme>
+						<Container size="2">{children}</Container>
+					</Theme>
 				</ApolloWrapper>
 			</body>
 		</html>

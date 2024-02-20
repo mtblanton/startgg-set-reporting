@@ -1,8 +1,9 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-import { TournamentCard } from "@/components/TournamentCard";
 import { getClient } from "@/api/client";
 import { GET_TOURNAMENTS_BY_OWNER } from "@/api/queries/getTournamentsByOwner";
+import { TournamentCard } from "@/components/TournamentCard";
+import { Box, Container, Flex } from "@radix-ui/themes";
+import { RefreshButton } from "./RefreshButton";
+// import styles from "./page.module.css";
 
 export default async function Home() {
 	const client = getClient();
@@ -24,7 +25,8 @@ export default async function Home() {
 	const tournamentNodes = data.tournaments.nodes;
 
 	return (
-		<main className={styles.main}>
+		<main>
+			<RefreshButton />
 			{tournamentNodes.map((node) => (
 				<TournamentCard name={node.name} id={node.id} key={node.id} />
 			))}

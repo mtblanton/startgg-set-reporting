@@ -5,10 +5,11 @@ import { REPORT_SET } from "@/api/mutations/reportSet";
 import { useMutation } from "@apollo/client";
 import { useFragment } from "@apollo/experimental-nextjs-app-support/ssr";
 import { SetSlot } from "./page";
+import { Button, Card, Flex, Grid, Text } from "@radix-ui/themes";
 
 type EntrantProps = {
 	id: string;
-	setId: number;
+	setId: string;
 };
 
 function Entrant({ id, setId }: EntrantProps) {
@@ -39,25 +40,31 @@ function Entrant({ id, setId }: EntrantProps) {
 	};
 
 	return (
-		<div>
-			<div>{entrant?.name}</div>
-			<button onClick={reportWinner}>{entrant?.name} won</button>
-		</div>
+		<Card>
+			<Flex direction="column" align="center">
+				<Text size="3">{entrant?.name}</Text>
+				<Button onClick={reportWinner}>{entrant?.name} won</Button>
+			</Flex>
+		</Card>
 	);
 }
 
-type SetCardProps = { slots: SetSlot[]; id: number; state: number };
+type SetCardProps = { slots: SetSlot[]; id: string; state: number };
 export function SetCard({ id, slots, state }: SetCardProps) {
 	if (slots.some((slot) => slot.entrant == null)) {
 		return null;
 	}
 
 	return (
-		<div>
-			<strong>{id}</strong> {state}
-			{slots.map((slot) => (
-				<Entrant id={slot.id} key={slot.id} setId={id} />
-			))}
-		</div>
+		<Card>
+			<Text>
+				<Text weight="bold">{id}</Text> {state}
+			</Text>
+			<Flex gap="2">
+				{slots.map((slot) => (
+					<Entrant id={slot.id} key={slot.id} setId={id} />
+				))}
+			</Flex>
+		</Card>
 	);
 }

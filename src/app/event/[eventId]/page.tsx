@@ -9,6 +9,7 @@ import { SetCard } from "./SetCard";
 import { groupBy } from "lodash-es";
 import { Fragment, Suspense } from "react";
 import { useSuspenseQuery } from "@apollo/experimental-nextjs-app-support/ssr";
+import { Container, Flex, Heading, Section, Text } from "@radix-ui/themes";
 
 type TournamentPageProps = {
 	params: {
@@ -54,11 +55,13 @@ export default function TournamentPage({
 
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
-			<div>
+			<Flex direction="column">
 				{Object.entries(groupedSets).map(([state, sets]) => {
 					return (
-						<Fragment key={state}>
-							{state}
+						<Section size="1" key={state}>
+							<Text as="div" size="6" weight="medium" mb="4">
+								{state}
+							</Text>
 							{sets.map((set) =>
 								!set.hasPlaceholder ? (
 									<SetCard
@@ -70,10 +73,10 @@ export default function TournamentPage({
 									/>
 								) : null,
 							)}
-						</Fragment>
+						</Section>
 					);
 				})}
-			</div>
+			</Flex>
 		</Suspense>
 	);
 }

@@ -43,7 +43,7 @@ function makeClient() {
 							stripDefer: true,
 						}),
 						httpLink,
-				  ])
+					])
 				: httpLink,
 	});
 }

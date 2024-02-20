@@ -1,5 +1,6 @@
-import Link from "next/link";
+import { Card, Link, Text } from "@radix-ui/themes";
 import { FC } from "react";
+import { ThemedLink } from "./ThemedLink";
 
 type TournamentCardProps = {
 	name: string;
@@ -8,8 +9,10 @@ type TournamentCardProps = {
 
 export const TournamentCard: FC<TournamentCardProps> = ({ name, id }) => {
 	return (
-		<div>
-			{name}: <Link href={`/tournament/${id}`}>{id}</Link>
-		</div>
+		<Card>
+			<Text>
+				{name}: <ThemedLink href={`/tournament/${id}`}>{id}</ThemedLink>
+			</Text>
+		</Card>
 	);
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useApolloClient } from "@apollo/client";
+import { Button } from "@radix-ui/themes";
 
 export function RefreshButton() {
 	const client = useApolloClient();
@@ -9,5 +10,5 @@ export function RefreshButton() {
 		client.refetchQueries({ include: "active" });
 	};
 
-	return <button onClick={refresh}>Refresh</button>;
+	return <Button onClick={refresh}>Refresh</Button>;
 }
