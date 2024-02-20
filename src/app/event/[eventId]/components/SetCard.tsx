@@ -1,5 +1,3 @@
-"use client";
-
 import { SetDetails } from "@/api/fragments/SetDetails";
 import { useFragment } from "@apollo/experimental-nextjs-app-support/ssr";
 import { PlayIcon } from "@radix-ui/react-icons";
