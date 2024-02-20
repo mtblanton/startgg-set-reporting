@@ -7,6 +7,9 @@ export const GET_EVENTS_IN_TOURNAMENT = gql(`
 			events {
 				name
 				id
+				videogame {
+					displayName
+				}
 			}
 		}
 	}

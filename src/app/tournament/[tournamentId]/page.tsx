@@ -2,6 +2,7 @@ import { getClient } from "@/api/client";
 import { GET_EVENTS_IN_TOURNAMENT } from "@/api/queries/getEventsInTournament";
 import Link from "next/link";
 import { EventCard } from "./EventCard";
+import { Box } from "@radix-ui/themes";
 
 type TournamentPageProps = {
 	params: {
@@ -26,10 +27,10 @@ export default async function TournamentPage({
 	});
 
 	return (
-		<div>
+		<Box>
 			{data.tournament.events.map((event) => (
 				<EventCard name={event.name} id={event.id} key={event.id} />
 			))}
-		</div>
+		</Box>
 	);
 }
