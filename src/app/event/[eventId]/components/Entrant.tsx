@@ -2,7 +2,8 @@
 
 import { SlotDetails } from "@/api/fragments/SlotDetails";
 import { REPORT_SET } from "@/api/mutations/reportSet";
-import { useMutation, useFragment } from "@apollo/client";
+import { useMutation } from "@apollo/client";
+import { useFragment } from "@apollo/experimental-nextjs-app-support/ssr";
 import { Card, Flex, Button, Text } from "@radix-ui/themes";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { useState } from "react";
